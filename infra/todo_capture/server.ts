@@ -1,9 +1,9 @@
 // Importing necessary modules from Deno standard libraries
 import { serve } from "https://deno.land/std/http/server.ts";
 import {
-  encodeBase64,
-  decodeBase64,
-} from "https://deno.land/std/encoding/base64.ts";
+  encode as encodeBase64,
+  decode as decodeBase64,
+} from "https://deno.land/std/encoding/base64url.ts";
 
 // Environment variables (set these in Deno Deploy's environment variable settings)
 const GITHUB_TOKEN = Deno.env.get("GITHUB_TOKEN")!;
@@ -31,13 +31,16 @@ async function appendToGitHubFile(contentToAppend: string) {
     headers: { Authorization: `token ${GITHUB_TOKEN}` },
   });
 
-  console.log(API_URL, response);
+  if (!response.ok) {
+    throw new Error(`Failed to fetch file: ${response.statusText}`);
+  }
 
   const fileData = await response.json();
-  console.log(fileData, FILE_PATH, response);
   const currentContent = decodeBase64(fileData.content);
   const updatedContent = currentContent + "\n" + contentToAppend;
-  const encodedUpdatedContent = encodeBase64(updatedContent);
+  const encodedUpdatedContent = encodeBase64(
+    new TextEncoder().encode(updatedContent)
+  );
 
   // Update the file on GitHub
   const updateResponse = await fetch(API_URL, {
@@ -55,7 +58,7 @@ async function appendToGitHubFile(contentToAppend: string) {
 
   if (!updateResponse.ok) {
     throw new Error(
-      `GitHub API responded with status ${updateResponse.status}`
+      `GitHub API responded with status ${updateResponse.status}: ${updateResponse.statusText}`
     );
   }
 
