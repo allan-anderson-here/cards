@@ -1,6 +1,9 @@
 // Importing necessary modules from Deno standard libraries
 import { serve } from "https://deno.land/std/http/server.ts";
-import { encode, decode } from "https://deno.land/std/encoding/base64url.ts";
+import {
+  encodeBase64,
+  decodeBase64,
+} from "https://deno.land/std/encoding/base64.ts";
 
 // Environment variables (set these in Deno Deploy's environment variable settings)
 const GITHUB_TOKEN = Deno.env.get("GITHUB_TOKEN")!;
@@ -33,13 +36,12 @@ async function appendToGitHubFile(contentToAppend: string) {
   }
 
   const fileData = await response.json();
-  const currentContent = decode(fileData.content);
+  const currentContent = decodeBase64(fileData.content);
   console.info(currentContent);
-  console.info();
 
   const updatedContent = currentContent + "\n" + contentToAppend;
   console.info(updatedContent);
-  const encodedUpdatedContent = encode(
+  const encodedUpdatedContent = encodeBase64(
     new TextEncoder().encode(updatedContent)
   );
   console.info(encodedUpdatedContent);
