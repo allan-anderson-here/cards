@@ -1,7 +1,7 @@
 // Importing necessary modules from Deno standard libraries
 import { serve, ServerRequest, ServerResponse } from "https://deno.land/std/http/server.ts";
-import { layout } from "./views/Layout.ts";
-import { TodoCaptureForm } from "./views/TodoCaptureForm.ts";
+import Layout from "./views/Layout.ts";
+import TodoCaptureForm from "./views/TodoCaptureForm.ts";
 import {
   encodeBase64,
   decodeBase64,
@@ -88,7 +88,7 @@ serve(
   async (req: ServerRequest): Promise<ServerResponse> => {
     if (req.method === "GET") {
       // Serve the HTML form for GET requests
-      return serveHtml(layout(TodoCaptureForm));
+      return serveHtml(Layout(TodoCaptureForm));
     } else if (req.method === "POST") {
       // Process form submissions for POST requests
       try {
@@ -99,7 +99,7 @@ serve(
           return new Response("No content provided", { status: 400 });
         }
         await appendToGitHubFile(contentToAppend);
-        return serveHtml(flash('Success') + layout(TodoCaptureForm));
+        return serveHtml(flash('Success') + Layout(TodoCaptureForm));
       } catch (error) {
         console.error(error);
         return new Response("Internal server error", { status: 500 });
