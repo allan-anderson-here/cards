@@ -1,5 +1,3 @@
-import React from "https://esm.sh/react";
-
 export default function ({bodyContent}: {bodyContent: string}) {
   return `
     <!DOCTYPE html>

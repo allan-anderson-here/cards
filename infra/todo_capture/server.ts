@@ -1,7 +1,7 @@
 // Importing necessary modules from Deno standard libraries
 import { serve, ServerRequest, ServerResponse } from "https://deno.land/std/http/server.ts";
-import { layout } from "./views/Layout";
-import { TodoCaptureForm } from "./views/TodoCaptureForm";
+import { layout } from "./views/Layout.ts";
+import { TodoCaptureForm } from "./views/TodoCaptureForm.ts";
 import {
   encodeBase64,
   decodeBase64,
