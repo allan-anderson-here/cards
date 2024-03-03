@@ -74,7 +74,7 @@ async function appendToGitHubFile(contentToAppend: string) {
   return await updateResponse.json();
 }
 
-function flash(message: string) string {
+function flash(message: string): string {
   return `<div class='FlashMessage'>${message}</div>`
 }
 // Function to serve the HTML form
