@@ -31,7 +31,7 @@ async function appendToGitHubFile(contentToAppend: string) {
     headers: { Authorization: `token ${GITHUB_TOKEN}` },
   });
 
-  console.log(REPO_OWNER, REPO_NAME, response);
+  console.log(API_URL, response);
 
   const fileData = await response.json();
   console.log(fileData, FILE_PATH, response);
