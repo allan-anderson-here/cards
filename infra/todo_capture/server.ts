@@ -1,5 +1,7 @@
 // Importing necessary modules from Deno standard libraries
-import { serve } from "https://deno.land/std/http/server.ts";
+import { serve, ServerRequest, ServerResponse } from "https://deno.land/std/http/server.ts";
+import { layout } from "./views/Layout";
+import { TodoCaptureForm } from "./views/TodoCaptureForm";
 import {
   encodeBase64,
   decodeBase64,
@@ -57,7 +59,7 @@ async function appendToGitHubFile(contentToAppend: string) {
       "Content-Type": "application/json",
     },
     body: JSON.stringify({
-      message: "Append content via Deno Deploy",
+      message: "Add TODO via Deno Deploy",
       content: updatedContentEncoded,
       sha: fileData.sha,
     }),
@@ -72,35 +74,21 @@ async function appendToGitHubFile(contentToAppend: string) {
   return await updateResponse.json();
 }
 
+function flash(message: string) string {
+  return `<div class='FlashMessage'>${message}</div>`
+}
 // Function to serve the HTML form
-function serveForm(): Response {
-  const html = `
-    <!DOCTYPE html>
-    <html lang="en">
-    <head>
-      <meta charset="UTF-8">
-      <meta name="viewport" content="width=device-width, initial-scale=1.0">
-      <title>Submit Content</title>
-    </head>
-    <body>
-      <form action="/" method="post">
-        <label for="content">Content:</label><br>
-        <textarea id="content" name="content" rows="4" cols="50"></textarea><br>
-        <input type="submit" value="Submit">
-      </form>
-    </body>
-    </html>
-  `;
+function serveHtml(html: string): ServerResponse {
   return new Response(html, {
     headers: { "Content-Type": "text/html" },
   });
 }
 
 serve(
-  async (req) => {
+  async (req: ServerRequest): Promise<ServerResponse> => {
     if (req.method === "GET") {
       // Serve the HTML form for GET requests
-      return serveForm();
+      return serveHtml(layout(TodoCaptureForm));
     } else if (req.method === "POST") {
       // Process form submissions for POST requests
       try {
@@ -111,7 +99,7 @@ serve(
           return new Response("No content provided", { status: 400 });
         }
         await appendToGitHubFile(contentToAppend);
-        return new Response("Content appended successfully", { status: 200 });
+        return serveHtml(flash('Success') + layout(TodoCaptureForm));
       } catch (error) {
         console.error(error);
         return new Response("Internal server error", { status: 500 });
@@ -122,5 +110,3 @@ serve(
   },
   { addr: ":8080" }
 );
-
-console.log("Server running on http://localhost:8080/");
