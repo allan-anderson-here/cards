@@ -36,15 +36,18 @@ async function appendToGitHubFile(contentToAppend: string) {
   }
 
   const fileData = await response.json();
-  const currentContent = decodeBase64(fileData.content);
-  console.info(currentContent);
 
+  // Decode the Base64 content from GitHub into a UTF-8 string
+  const currentContentDecodedBytes = decodeBase64(fileData.content);
+  const currentContent = new TextDecoder().decode(currentContentDecodedBytes);
+
+  // Append new content to the existing content
   const updatedContent = currentContent + "\n" + contentToAppend;
-  console.info(updatedContent);
-  const encodedUpdatedContent = encodeBase64(
+
+  // Encode the updated content from a string to a UTF-8 byte array, then to Base64
+  const updatedContentEncoded = encodeBase64(
     new TextEncoder().encode(updatedContent)
   );
-  console.info(encodedUpdatedContent);
 
   // Update the file on GitHub
   const updateResponse = await fetch(API_URL, {
@@ -55,7 +58,7 @@ async function appendToGitHubFile(contentToAppend: string) {
     },
     body: JSON.stringify({
       message: "Append content via Deno Deploy",
-      content: encodedUpdatedContent,
+      content: updatedContentEncoded,
       sha: fileData.sha,
     }),
   });
