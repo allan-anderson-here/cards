@@ -58,14 +58,40 @@ async function appendToGitHubFile(contentToAppend: string) {
   return await updateResponse.json();
 }
 
-// Main server handler
+// Function to serve the HTML form
+function serveForm(): Response {
+  const html = `
+    <!DOCTYPE html>
+    <html lang="en">
+    <head>
+      <meta charset="UTF-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      <title>Submit Content</title>
+    </head>
+    <body>
+      <form action="/" method="post">
+        <label for="content">Content:</label><br>
+        <textarea id="content" name="content" rows="4" cols="50"></textarea><br>
+        <input type="submit" value="Submit">
+      </form>
+    </body>
+    </html>
+  `;
+  return new Response(html, {
+    headers: { "Content-Type": "text/html" },
+  });
+}
+
 serve(
   async (req) => {
-    if (req.method === "POST") {
+    if (req.method === "GET") {
+      // Serve the HTML form for GET requests
+      return serveForm();
+    } else if (req.method === "POST") {
+      // Process form submissions for POST requests
       try {
         const body = await req.text();
         const formData = parseFormData(body);
-        // Assuming 'content' is the field name in your form
         const contentToAppend = formData["content"];
         if (!contentToAppend) {
           return new Response("No content provided", { status: 400 });
