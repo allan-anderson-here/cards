@@ -30,7 +30,9 @@ async function appendToGitHubFile(contentToAppend: string) {
   const response = await fetch(API_URL, {
     headers: { Authorization: `token ${GITHUB_TOKEN}` },
   });
+
   const fileData = await response.json();
+  console.log(fileData, FILE_PATH, response);
   const currentContent = decodeBase64(fileData.content);
   const updatedContent = currentContent + "\n" + contentToAppend;
   const encodedUpdatedContent = encodeBase64(updatedContent);
