@@ -88,7 +88,7 @@ serve(
   async (req: ServerRequest): Promise<ServerResponse> => {
     if (req.method === "GET") {
       // Serve the HTML form for GET requests
-      return serveHtml(Layout(TodoCaptureForm));
+      return serveHtml(Layout(TodoCaptureForm()));
     } else if (req.method === "POST") {
       // Process form submissions for POST requests
       try {
@@ -99,7 +99,7 @@ serve(
           return new Response("No content provided", { status: 400 });
         }
         await appendToGitHubFile(contentToAppend);
-        return serveHtml(flash('Success') + Layout(TodoCaptureForm));
+        return serveHtml(flash('Success') + Layout(TodoCaptureForm()));
       } catch (error) {
         console.error(error);
         return new Response("Internal server error", { status: 500 });
