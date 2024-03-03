@@ -42,7 +42,7 @@ async function appendToGitHubFile(contentToAppend: string) {
   const currentContent = new TextDecoder().decode(currentContentDecodedBytes);
 
   // Append new content to the existing content
-  const updatedContent = currentContent + "\n" + contentToAppend;
+  const updatedContent = currentContent + "\n\n" + contentToAppend;
 
   // Encode the updated content from a string to a UTF-8 byte array, then to Base64
   const updatedContentEncoded = encodeBase64(
